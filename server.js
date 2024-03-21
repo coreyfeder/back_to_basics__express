@@ -1,9 +1,6 @@
 const express = require("express")
 const fs = require('fs')
 
-const app = express()
-const router = express.Router()
-app.use('/', router)  // mount the router on the app
 
 // this endpoint
 const protocol = "http"
@@ -14,103 +11,65 @@ const baseurl = `${protocol}://${host}:${port}`
 const url = `${baseurl}/${prefix}`
 
 
-// CONNECTION TO DB
+const app = express()
+app.use(express.json())
+// app.use(express.text())
+// const router = express.Router()
+// app.use('/', router)  // mount the router on the app
 
-// MongoDB
-const mongoUrl = "https://us-east-1.aws.data.mongodb-api.com/app/data-ghhyb/endpoint/data/v1"
-/* 
-example: 
-
-curl -s `${mongoUrl}/action/findOne` \
-  -X POST \
-  -H "Accept: application/json" \
-  -H "apiKey: apikeyapikeyapikeyapikeyapikeyapikeyapikeyapikey" \
-  -d '{
-    "dataSource": "mongodb-atlas",
-    "database": "sample_mflix",
-    "collection": "movies",
-    "filter": {
-      "title": "The Matrix"
-    }
-  }'
-
-*/
 
 // MIDDLEWARE
 
-app.use(express.json())
-
 
 // ROUTER
-
+/*
 // a middleware function with no mount path => code executed for every request
 router.use((req, res, next) => {
+    console.log('Begin Routing!')
+    console.log('RECEIVED begin')
+    console.log(req.body)
+    console.log('end RECEIVED')
     console.log([
-            Date.now(), 
+            Date.now(),
             'request',
-            req.method, 
+            req.method,
             req.originalUrl,
         ].join(' : '))
     next()
-    /* oooh, can I postlog, to include the response code? test: will control come back to this process after calling `next()`? */ 
+    // oooh, can I postlog, to include the response code? test: will control come back to this process after calling `next()`?
     console.log([
-            Date.now(), 
-            'response', 
+            Date.now(),
+            'response',
             req.method,  // why isn't this recorded in res?
             res.statusCode,  // this doesn't work for some errors
             res.statusMessage,  // sometimes blank
         ].join(' : '))
-    /* 
-    Don't be quick to log:
-        - res.json()                    it'll likely just be "[object Object]"
-        - JSON.stringify(res.json())    it'll likely be enormous
-        - Util.inspect(res.json())      maybe tweak the paramters to limit line length, depth, or breadh
-     */
+    console.log(req.body)
+    console.log('FIN')
+    next()
 })
-
+ */
 
 // ROUTES
 
-app.route('/name_of_your_endpoint')
+app.route('/')
     .all((req, res, next) => {
-        // code in this section will be executed 
+        // code in this section will be executed
         // no matter which HTTP verb was used
+        console.log("Passing through the main Junction route.")
+        next()
     })
-    .get((req, res, next) => {
+    .get((req, res) => {
         // GET = change nothing, just hand back information
+        console.log("reaching the GET endpoint")
+        res.status(200)
+        res.send("You have reached the GET / endpoint.")
     })
-    .post((req, res, next) => {
+    .post((req, res) => {
         // POST = insert something new
+        console.log("this is the POST endpoint")
+        res.send("some modicum of success.")
     })
-    /* 
-    .patch((req, res, next) => {
-        // PATCH = update part of an existing thing
-    })
-    .put((req, res, next) => {
-        // PUT = replace an existing thing
-    })
-     */
-    .delete((req, res, next) => {
-        // DELETE = remove some data
-    })
-
-
-// ERROR HANDLING / endware
-//   If a call made it this far, something was wrong with it.
-
-// bounce anything hitting the base without the prefix
-app.all("/", (req, res) => {
-    res.status(403);
-    res.json({ error: `Public API endpoints are available at: ${url}` })
-});
-
-// "anything else"
-// can also use `app.use((err, req, res, next) ...`
-app.all((req, res) => {
-    console.error(err.stack);
-    res.status(404).json({ error: `Resource not found.` });
-})
-
 
 // GO / LISTEN
 
