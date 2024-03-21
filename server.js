@@ -13,7 +13,7 @@ const url = `${baseurl}/${prefix}`
 
 const app = express()
 app.use(express.json())
-// app.use(express.text())
+app.use(express.urlencoded())
 // const router = express.Router()
 // app.use('/', router)  // mount the router on the app
 
@@ -68,6 +68,12 @@ app.route('/')
     .post((req, res) => {
         // POST = insert something new
         console.log("this is the POST endpoint")
+        // console.log(req.json)  // undefined
+        // console.log(req.body)  // {}
+        // console.log(req.text)  // undefined
+        // console.log(req.raw)  // undefined
+        // console.log(req.hasbody)  // undefined
+        console.log(req.body)  // hey there, functional. wait, why weren't you functional before?
         res.send("some modicum of success.")
     })
 
