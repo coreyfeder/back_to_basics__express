@@ -1,6 +1,12 @@
 const express = require("express")
 const fs = require('fs')
 
+/*
+Okay, found the main problem. SEND THE DATA AS JSON.
+
+When it comes in as url-encoded text, the data comes in as an object...whose entire payload is a key, with an empty string as the value. Yes, you can call `JSON.parse(Object.keys(req.body)[0])`...but FFS, why should you have to?
+ */
+
 
 // this endpoint
 const protocol = "http"
@@ -16,7 +22,6 @@ app.use(express.json())
 app.use(express.urlencoded())
 // const router = express.Router()
 // app.use('/', router)  // mount the router on the app
-
 
 // MIDDLEWARE
 
